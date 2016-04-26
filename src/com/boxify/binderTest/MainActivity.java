@@ -1,17 +1,27 @@
 package com.boxify.binderTest;
 
 
-import com.kainny.testforplugin.R;
+import java.util.List;
 
+import com.kainny.testforplugin.R;
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ActivityThread;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.res.Configuration;
+import android.content.pm.*;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.os.RemoteException;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,11 +29,14 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
+@SuppressLint("ShowToast")
 public class MainActivity extends Activity implements OnClickListener {
     private IIsolatedProcess mService;
     private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String TARGET = "com.kainny.boxify";
     private boolean mIsBound = false;
     private TextView tv;
+    private IBinder appThread=null;
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -63,6 +76,7 @@ public class MainActivity extends Activity implements OnClickListener {
 		findViewById(R.id.bind).setOnClickListener(this);
         findViewById(R.id.unbind).setOnClickListener(this);
         findViewById(R.id.call).setOnClickListener(this);
+        findViewById(R.id.bindApp).setOnClickListener(this);
         tv = (TextView) this.findViewById(R.id.tv);
         
 		
@@ -107,18 +121,80 @@ public class MainActivity extends Activity implements OnClickListener {
         case R.id.call:
             callRemote();
             break;
+        case R.id.bindApp:
+        	bindApp();
+        	break;
+        	
+        
     }
 		
 	}
-
+    private void bindApp(){
+    	if(appThread != null){
+            Parcel data =Parcel.obtain();
+            
+   		   //data.writeInterfaceToken(IApplicationThread.descript);
+   		    data.writeInterfaceToken("android.app.IApplicationThread");
+   		    data.writeString(TARGET);
+   		    ApplicationInfo appInfo = null;
+			try {
+				appInfo = getPackageManager().getApplicationInfo(TARGET, 0);
+			} catch (NameNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+				Toast.makeText(this, "idontwanna see u ", Toast.LENGTH_SHORT).show();
+				
+			}
+   		    appInfo.writeToParcel(data,0);
+   		    data.writeTypedList(null);//providers
+   		    data.writeInt(0);//testname ==NULL
+   		    data.writeInt(0);//autoStopProfiler
+   		    data.writeBundle(null);//testArgs
+   		    data.writeStrongInterface(null);//testWatcher
+   		    data.writeInt(0);//debugMode;
+   		    data.writeInt(0);//openGLtrace
+   		    data.writeInt(0);//restricted backup mode
+   		    data.writeInt(0);//persistent   		    
+   		    Configuration config = new Configuration();
+   		    config.writeToParcel(data, 0);
+//   		CompabilityInfo : public void writeToParcel(Parcel dest, int flags) {
+//   			        dest.writeInt(mCompatibilityFlags);1.0f
+//   			        dest.writeInt(applicationDensity);1024
+//   			        dest.writeFloat(applicationScale);
+//   			        dest.writeFloat(applicationInvertedScale);
+//   			    }
+//   			
+   	 	    data.writeInt(1);//
+            data.writeInt(DisplayMetrics.DENSITY_DEFAULT);
+            data.writeFloat(1.0f);
+            data.writeFloat(1.0f);
+   		   
+   		    data.writeMap(null);//data.writeMap(services);
+   		    data.writeBundle(null);//data.writeBundle(coreSettings);          
+            try {
+				appThread.transact(12, data, null, IBinder.FLAG_ONEWAY);
+				Toast.makeText(this, "GoodNews", Toast.LENGTH_SHORT).show();
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+            data.recycle();
+            
+    	}
+    	else{
+    		Toast.makeText(this, "Cannot get Appthread", Toast.LENGTH_SHORT).show();
+    	}
+    }
 	private void callRemote() {
 		// TODO Auto-generated method stub
 		if (mService != null) {
             try {
-                int result = mService.sayHello(1,2);
-                Toast.makeText(this, "The result is "+result, Toast.LENGTH_SHORT).show();
-                Binder appBind = mService.handBinder(result);
-                Toast.makeText(this,appBind.toString(),Toast.LENGTH_SHORT);
+                //int result = mService.sayHello(1,2);
+                //Toast.makeText(this, "The result is "+result, Toast.LENGTH_SHORT).show();
+                AppBinder appBinder = mService.handBinder();
+                appThread = appBinder.getAppThread();
+                Toast.makeText(this,appThread.toString(),Toast.LENGTH_SHORT).show();
+                
             } catch (RemoteException e) {
                 e.printStackTrace();
                 Toast.makeText(this, "Remote call error!", Toast.LENGTH_SHORT).show();

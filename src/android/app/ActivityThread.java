@@ -1,7 +1,5 @@
 package android.app;
 
-import android.os.IBinder;
-
 /**
  * NOTICE:不要混淆本类
  *
@@ -18,16 +16,16 @@ public final class ActivityThread {
     public static ActivityThread currentActivityThread() {
         return null;
     }
-    public class ApplicationThread extends ApplicationThreadNative {
-
-		@Override
-		public IBinder asBinder() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-    }
-    public static ApplicationThread getApplicationThread(){
-    	return  null;
-    }
+//    public class ApplicationThread extends ApplicationThreadNative {
+//
+//		@Override
+//		public IBinder asBinder() {
+//			// TODO Auto-generated method stub
+//			return null;
+//		}
+//    }
+//    public static ApplicationThread getApplicationThread(){
+//    	return  null;
+//    }
 
 }

@@ -39,6 +39,7 @@
         android:text="Call" />
 
     <LinearLayout
+        android:id="@+id/linearLayout1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
@@ -53,5 +54,13 @@
         android:layout_alignRight="@+id/textView2"
         android:layout_centerVertical="true"
         android:text="waiting for you !" />
+
+    <Button
+        android:id="@+id/bindApp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/unbind"
+        android:layout_below="@+id/linearLayout1"
+        android:text="bindApp" />
 
 </RelativeLayout>

@@ -1,10 +1,10 @@
 package com.boxify.binderTest;
 
 import android.app.ActivityThread;
-import android.app.ActivityThread.ApplicationThread;
 import android.app.Application;
 import android.app.ApplicationThreadNative;
 import android.os.Binder;
+import com.boxify.reflect.*;
 
 
 
@@ -39,7 +39,5 @@ public final class DelegateActivityThread {
         activityThreadReflect.set("mInstrumentation", newInstrumentation);
     }
     */
-    public ApplicationThread getApplicationThread(){
-    	return activityThreadReflect.get("mAppThread");
-    }
+
 }
