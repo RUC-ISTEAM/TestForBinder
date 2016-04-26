@@ -1,6 +1,7 @@
 package com.boxify.binderTest;
 
 
+import java.util.HashMap;
 import java.util.List;
 
 import com.kainny.testforplugin.R;
@@ -37,6 +38,10 @@ public class MainActivity extends Activity implements OnClickListener {
     private boolean mIsBound = false;
     private TextView tv;
     private IBinder appThread=null;
+    private Bundle coreSettings =new Bundle();
+    private Bundle testArgs = new Bundle();
+    
+    
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -132,7 +137,13 @@ public class MainActivity extends Activity implements OnClickListener {
     private void bindApp(){
     	if(appThread != null){
             Parcel data =Parcel.obtain();
-            
+//            void bindApplication(String packageName, ApplicationInfo info, List<ProviderInfo> providers,
+//                    ComponentName testName, ProfilerInfo profilerInfo, Bundle testArguments,
+//                    IInstrumentationWatcher testWatcher, IUiAutomationConnection uiAutomationConnection,
+//                    int debugMode, boolean openGlTrace, boolean trackAllocation,
+//                    boolean restrictedBackupMode, boolean persistent, Configuration config,
+//                    CompatibilityInfo compatInfo, Map<String, IBinder> services,
+//                    Bundle coreSettings) throws RemoteException;
    		   //data.writeInterfaceToken(IApplicationThread.descript);
    		    data.writeInterfaceToken("android.app.IApplicationThread");
    		    data.writeString(TARGET);
@@ -146,10 +157,18 @@ public class MainActivity extends Activity implements OnClickListener {
 				
 			}
    		    appInfo.writeToParcel(data,0);
-   		    data.writeTypedList(null);//providers
+   		    List<ProviderInfo> providers = null;
+   		    data.writeTypedList(providers);//providers
    		    data.writeInt(0);//testname ==NULL
+   		    String profileName =null;
+   		    data.writeString(profileName);
    		    data.writeInt(0);//autoStopProfiler
-   		    data.writeBundle(null);//testArgs
+   		    
+   		    //testArgs.putInt("args", 0x4C444E42);
+   		    
+   		    testArgs.putString(profileName, profileName);
+   		    data.writeBundle(testArgs);//testArgs
+            
    		    data.writeStrongInterface(null);//testWatcher
    		    data.writeInt(0);//debugMode;
    		    data.writeInt(0);//openGLtrace
@@ -168,11 +187,11 @@ public class MainActivity extends Activity implements OnClickListener {
             data.writeInt(DisplayMetrics.DENSITY_DEFAULT);
             data.writeFloat(1.0f);
             data.writeFloat(1.0f);
-   		   
-   		    data.writeMap(null);//data.writeMap(services);
-   		    data.writeBundle(null);//data.writeBundle(coreSettings);          
+            HashMap<String, IBinder> services = null;
+   		    data.writeMap(services);//data.writeMap(services);
+   		    data.writeBundle(coreSettings);//data.writeBundle(coreSettings);          
             try {
-				appThread.transact(12, data, null, IBinder.FLAG_ONEWAY);
+				appThread.transact(13, data, null, IBinder.FLAG_ONEWAY);
 				Toast.makeText(this, "GoodNews", Toast.LENGTH_SHORT).show();
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block
