@@ -3,12 +3,14 @@ package com.boxify.binderTest;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import com.kainny.testforplugin.R;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityThread;
 import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.Configuration;
@@ -21,6 +23,7 @@ import android.os.Looper;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.RemoteException;
+import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
@@ -57,12 +60,13 @@ public class MainActivity extends Activity implements OnClickListener {
         @Override
         public void onServiceDisconnected(ComponentName name) {
             Toast.makeText(MainActivity.this, "Service disconnected", Toast.LENGTH_SHORT).show();
-            mService = null;
+            
             try{
             	mService.unregisterCallBack(mBrokerProcess);
             }catch(RemoteException e){
             	e.printStackTrace();
             }
+            mService = null;
         }
     };
     private IBrokerProcess mBrokerProcess = new IBrokerProcess.Stub() {
@@ -137,14 +141,7 @@ public class MainActivity extends Activity implements OnClickListener {
     private void bindApp(){
     	if(appThread != null){
             Parcel data =Parcel.obtain();
-//            void bindApplication(String packageName, ApplicationInfo info, List<ProviderInfo> providers,
-//                    ComponentName testName, ProfilerInfo profilerInfo, Bundle testArguments,
-//                    IInstrumentationWatcher testWatcher, IUiAutomationConnection uiAutomationConnection,
-//                    int debugMode, boolean openGlTrace, boolean trackAllocation,
-//                    boolean restrictedBackupMode, boolean persistent, Configuration config,
-//                    CompatibilityInfo compatInfo, Map<String, IBinder> services,
-//                    Bundle coreSettings) throws RemoteException;
-   		   //data.writeInterfaceToken(IApplicationThread.descript);
+//           
    		    data.writeInterfaceToken("android.app.IApplicationThread");
    		    data.writeString(TARGET);
    		    ApplicationInfo appInfo = null;
@@ -153,7 +150,6 @@ public class MainActivity extends Activity implements OnClickListener {
 			} catch (NameNotFoundException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
-				Toast.makeText(this, "idontwanna see u ", Toast.LENGTH_SHORT).show();
 				
 			}
    		    appInfo.writeToParcel(data,0);
@@ -162,11 +158,12 @@ public class MainActivity extends Activity implements OnClickListener {
    		    data.writeInt(0);//testname ==NULL
    		    String profileName =null;
    		    data.writeString(profileName);
+   		    data.writeInt(0);//profileFd
    		    data.writeInt(0);//autoStopProfiler
    		    
    		    //testArgs.putInt("args", 0x4C444E42);
    		    
-   		    testArgs.putString(profileName, profileName);
+   		    //testArgs.putString(profileName, profileName);
    		    data.writeBundle(testArgs);//testArgs
             
    		    data.writeStrongInterface(null);//testWatcher
@@ -175,20 +172,17 @@ public class MainActivity extends Activity implements OnClickListener {
    		    data.writeInt(0);//restricted backup mode
    		    data.writeInt(0);//persistent   		    
    		    Configuration config = new Configuration();
-   		    config.writeToParcel(data, 0);
-//   		CompabilityInfo : public void writeToParcel(Parcel dest, int flags) {
-//   			        dest.writeInt(mCompatibilityFlags);1.0f
-//   			        dest.writeInt(applicationDensity);1024
-//   			        dest.writeFloat(applicationScale);
-//   			        dest.writeFloat(applicationInvertedScale);
-//   			    }
-//   			
+   		    config.setToDefaults();   		   
+   		    config.locale=new Locale("en_US");
+   		    //Toast.makeText(this, config.toString(), Toast.LENGTH_SHORT).show();
+   		    config.writeToParcel(data, 0); 			
    	 	    data.writeInt(1);//
             data.writeInt(DisplayMetrics.DENSITY_DEFAULT);
             data.writeFloat(1.0f);
             data.writeFloat(1.0f);
             HashMap<String, IBinder> services = null;
    		    data.writeMap(services);//data.writeMap(services);
+   		   
    		    data.writeBundle(coreSettings);//data.writeBundle(coreSettings);          
             try {
 				appThread.transact(13, data, null, IBinder.FLAG_ONEWAY);
