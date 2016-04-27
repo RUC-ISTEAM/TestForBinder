@@ -1,13 +1,15 @@
 package com.boxify.binderTest;
 
+import android.content.pm.ActivityInfo;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
 public class AppBinder extends Binder implements Parcelable {
-    private IBinder mAppBinder;
+    private IBinder mAppBinder;;
 	public AppBinder(Parcel source) {
 		// TODO Auto-generated constructor stub
 		super();
@@ -41,9 +43,7 @@ public class AppBinder extends Binder implements Parcelable {
     public IBinder getAppThread() {  
     	Log.i("!", "getAppThread");
         return mAppBinder;  
-    }  
- 
- 
+    }
 	public static final Parcelable.Creator<AppBinder> CREATOR = new Creator<AppBinder>(){
 		@Override
 		         public AppBinder createFromParcel(Parcel source) {

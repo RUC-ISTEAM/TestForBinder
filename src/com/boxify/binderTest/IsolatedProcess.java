@@ -3,8 +3,13 @@ package com.boxify.binderTest;
 import android.annotation.SuppressLint;
 import android.app.ActivityThread;
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Parcel;
@@ -57,7 +62,7 @@ public class IsolatedProcess extends Service{
 				Parcel data = null;
 				//data.writeStrongBinder(appThread);
 				AppBinder app = new AppBinder(data);
-				app.setAppThread(appThread);				
+				app.setAppThread(appThread);
 				return app;
 			}
 	 };
@@ -72,10 +77,16 @@ public class IsolatedProcess extends Service{
 	        }
 		 Reflect getMainThread=Reflect.on(ActivityThread.currentActivityThread());
          appThread = getMainThread.get("mAppThread");
+			
 		return mBinder;
 	}
 
-    public IsolatedProcess(){}
+    private ComponentName getComponentName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public IsolatedProcess(){}
     
 
 	@Override
