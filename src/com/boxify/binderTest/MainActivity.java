@@ -44,6 +44,7 @@ public class MainActivity extends Activity implements OnClickListener {
     private IBinder appThread=null;
     private Bundle coreSettings =new Bundle();
     private Bundle testArgs = new Bundle();
+    private Bundle state = new Bundle();
     private ApplicationInfo appInfo = null;
     private ActivityInfo actInfo=null;
     
@@ -138,7 +139,7 @@ public class MainActivity extends Activity implements OnClickListener {
         	bindApp();
         	break;
         case R.id.launch:
-        	AppLaunch();
+        	appLaunch();
         	break;
         	
         
@@ -166,10 +167,6 @@ public class MainActivity extends Activity implements OnClickListener {
    		    data.writeString(profileName);
    		    data.writeInt(0);//profileFd
    		    data.writeInt(0);//autoStopProfiler
-   		    
-   		    //testArgs.putInt("args", 0x4C444E42);
-   		    
-   		    //testArgs.putString(profileName, profileName);
    		    data.writeBundle(testArgs);//testArgs
             
    		    data.writeStrongInterface(null);//testWatcher
@@ -204,7 +201,7 @@ public class MainActivity extends Activity implements OnClickListener {
     		Toast.makeText(this, "Cannot get Appthread", Toast.LENGTH_SHORT).show();
     	}
     }
-    private void AppLaunch(){
+    private void appLaunch(){
     	if(appThread != null){
             Parcel data =Parcel.obtain();
 //           
@@ -254,54 +251,34 @@ public class MainActivity extends Activity implements OnClickListener {
                 data.writeFloat(1.0f);
                 data.writeFloat(1.0f);
 //              data.writeBundle(state);
-                
-//		        data.writeTypedList(pendingResults);//null
+                data.writeBundle(state);
+//		        data.writeTypedList(pendingResults);
                 List<ResultInfo> pendingResults= null;
-       		    data.writeTypedList(pendingResults);//providers
-       		    
-       		    
-//   		        data.writeTypedList(pendingNewIntents);//null
-//   		        data.writeInt(notResumed ? 1 : 0);//0
-//   		        data.writeInt(isForward ? 1 : 0);//0
-//   		        data.writeString(profileName);//null
-//   		        if (profileFd != null) {//0
-//   		            data.writeInt(1);
-//   		            profileFd.writeToParcel(data, Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-//   		        } else {
-//   		            data.writeInt(0);
-//   		        }
-//   		         data.writeInt(autoStopProfiler ? 1 : 0);//0
-   		    
-   		    data.writeInt(0);//testname ==NULL
-   		    String profileName =null;
-   		    data.writeString(profileName);
-   		    data.writeInt(0);//profileFd
-   		    data.writeInt(0);//autoStopProfiler
-   		    
-   		    //testArgs.putInt("args", 0x4C444E42);
-   		    
-   		    //testArgs.putString(profileName, profileName);
-   		    data.writeBundle(testArgs);//testArgs
+       		    data.writeTypedList(pendingResults);
+//       		data.writeTypedList(pendingNewIntents);
+       		    List<Intent> pendingNewIntents=null;
+   		        data.writeTypedList(pendingNewIntents);   		        
+//   		    data.writeInt(notResumed ? 1 : 0);//0
+   		        data.writeInt(0);
+// 		        data.writeInt(isForward ? 1 : 0);//0 
+   		        data.writeInt(0);
+//   		    data.writeString(profileName);//null
+   	   		    String profileName =null;
+   	   		    data.writeString(profileName); 		        
+//   		    if (profileFd != null) {//0
+   	   		    data.writeInt(0);
+//   		    data.writeInt(autoStopProfiler ? 1 : 0);//0
+   	   		    data.writeInt(0);
+ 		         
+            try {
+				appThread.transact(7, data, null, IBinder.FLAG_ONEWAY);
+				Toast.makeText(this, "GoodNews", Toast.LENGTH_SHORT).show();
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+            data.recycle();
             
-   		    data.writeStrongInterface(null);//testWatcher
-   		    data.writeInt(0);//debugMode;
-   		    data.writeInt(0);//openGLtrace
-   		    data.writeInt(0);//restricted backup mode
-   		    data.writeInt(0);//persistent   		    
-   	 	    
-            HashMap<String, IBinder> services = null;
-   		    data.writeMap(services);//data.writeMap(services);
-   		   
-   		    data.writeBundle(coreSettings);//data.writeBundle(coreSettings);          
-//            try {
-//				appThread.transact(7, data, null, IBinder.FLAG_ONEWAY);
-//				Toast.makeText(this, "GoodNews", Toast.LENGTH_SHORT).show();
-//			} catch (RemoteException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//            data.recycle();
-//            
     	}
     	else{
     		Toast.makeText(this, "Cannot get Appthread", Toast.LENGTH_SHORT).show();
