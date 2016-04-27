@@ -8,11 +8,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.boxify.binderTest.MainActivity" >
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
 
     <Button
         android:id="@+id/bind"
@@ -39,19 +34,39 @@
         android:text="Call" />
 
     <LinearLayout
+        android:id="@+id/linearLayout1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:orientation="vertical" >
+
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/tv"
+    <Button
+        android:id="@+id/bindApp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/textView2"
-        android:layout_centerVertical="true"
-        android:text="waiting for you !" />
+        android:layout_below="@+id/linearLayout1"
+        android:text="bindApp" />
+
+    <Button
+        android:id="@+id/launch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/bindApp"
+        android:layout_alignParentRight="true"
+        android:text="Launch" />
+
+    <EditText
+        android:id="@+id/editText1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/call"
+        android:layout_alignLeft="@+id/call"
+        android:text="order：bind，call，bindApp，Launch" >
+
+        <requestFocus />
+    </EditText>
 
 </RelativeLayout>

@@ -3,18 +3,26 @@ package com.boxify.binderTest;
 import android.annotation.SuppressLint;
 import android.app.ActivityThread;
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.Parcel;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.util.Log;
 import android.widget.Toast;
 import com.boxify.reflect.*;
+
 public class IsolatedProcess extends Service{
 	private static final String TAG = "IsolatedProcess";
-	
+	String temp="init";
+	Binder appThread;
 	private RemoteCallbackList<IBrokerProcess> mCallBacks = new RemoteCallbackList<IBrokerProcess>();
     public boolean isMainThread() {
         return Looper.getMainLooper() == Looper.myLooper();
@@ -37,15 +45,7 @@ public class IsolatedProcess extends Service{
 	           
 	           return a+b;
 	        }
-	        @Override
-	        public Object handBinder(int a) throws RemoteException{
-	        	if (!isMainThread()) {
-		            throw new IllegalThreadStateException("Warning:not main thread！");
-		        }
-	        	Reflect getMainThread=Reflect.on(ActivityThread.currentActivityThread());
-	   		    Object appThread = getMainThread.get("mAppThread");
-	    	    return appThread;
-	      }
+	       
 	        @Override
 	        public void registerCallBack(IBrokerProcess cb) throws RemoteException {
 	            mCallBacks.register(cb);
@@ -54,6 +54,17 @@ public class IsolatedProcess extends Service{
 	        public void unregisterCallBack(IBrokerProcess cb) throws RemoteException {
 	            mCallBacks.unregister(cb);
             }
+
+			@Override
+			public AppBinder handBinder() throws RemoteException {
+				// TODO Auto-generated method stub
+		        // must be  mainThread to get Application Thread
+				Parcel data = null;
+				//data.writeStrongBinder(appThread);
+				AppBinder app = new AppBinder(data);
+				app.setAppThread(appThread);
+				return app;
+			}
 	 };
 
 
@@ -61,13 +72,21 @@ public class IsolatedProcess extends Service{
 	@Override
 	public IBinder onBind(Intent intent) {
 		// TODO Auto-generated method stub
+		 if (!isMainThread()) {
+	           throw new IllegalThreadStateException("Warning:not main thread！");
+	        }
+		 Reflect getMainThread=Reflect.on(ActivityThread.currentActivityThread());
+         appThread = getMainThread.get("mAppThread");
+			
 		return mBinder;
 	}
-	
-    public void helloWorld(){
-    	Toast.makeText(this.getApplicationContext(), "Hello World! -from isolated process", Toast.LENGTH_SHORT).show();
-    }
-    public IsolatedProcess(){}
+
+    private ComponentName getComponentName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public IsolatedProcess(){}
     
 
 	@Override
